@@ -9,7 +9,7 @@
 #include "image.h"
 #include "color.h"
 
-bool invalid_cell(unsigned x, unsigned y, unsigned width, unsigned height, char** visited) {
+bool invalid_cell(unsigned x, unsigned y, unsigned width, unsigned height, bool** visited) {
     return x < 0 || width <= x || y < 0 || height <= y;
 }
 
@@ -22,7 +22,7 @@ bool is_near_boundary(GrayPixel** source,
                       unsigned height,
                       unsigned init_x,
                       unsigned init_y,
-                      char** visited,
+                      bool** visited,
                       unsigned char boundaries_detection_strength,
                       unsigned char boundaries_radius
 ) {
@@ -49,7 +49,7 @@ void bfs(Pixel** image,
          unsigned height,
          unsigned init_x,
          unsigned init_y,
-         char** visited,
+         bool** visited,
          unsigned char boundaries_detection_strength,
          unsigned char boundaries_radius,
          Pixel color,
