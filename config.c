@@ -172,39 +172,3 @@ Config load_config(const char* path) {
     printf("Loaded %s\n", get_name_from_path(path));
     return config;
 }
-
-/*
-try to open file
-if not exists = return default
-if exists - read and check
-lines could be shuffled, aka
-config: this
-gauss: 5x5
-
-or
-
-gauss: 5x5
-config: this
-
-read lines
-check, what lines content settings
-example:
-config: arm.cfg
-gauss: 3x3
-some_test_ssstring!!!!!
-sobel: 5x5
-lajfeljfeljfewa
-
-means:
-we have settings for what config we should load (instead of this, if this is not arm.cfg, or this, if this is arm.cfg. also we can use config: this, to say that we should load this)
-we cave settings for gauss and sobel
-we have 2 useless strings that we ignore
-
-// we search only if we load default.cfg, we dont jump from named configs to prevent cycling: default.cfg -> arm.cfg -> default.cfg -> ...
-if this is not arm.cfg, we search for arm.cfg
-if it exists, we load it
-if not, we load default
-if this is arm.cfg (or we had config: this), we apply settings from this config
-if some settings missed (for example, we missed boundaries strength (aka >= 150) and boundaries width (aka radius = 3), we apply this from default config
-if some settings have invalid values (aka gauss: 0x0), we apply from default
-*/
