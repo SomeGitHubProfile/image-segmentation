@@ -39,24 +39,17 @@ int main() {
     GrayPixel** sobel_image = sobel_filter(gauss_image, width, height, config.sobel_kernel);
     Pixel** segmented_image = segment_image(sobel_image, width, height, config.boundaries_detection_strength, config.boundaries_radius);
 
-    if (config.median_filter == MedianFilter_enabled) {
-        unsigned char* median_encoded = encode_gray_image(median_image, width, height);
-        lodepng_encode32_file("output_images/gauss.png", median_encoded, width, height);
-    }
-    unsigned char* gauss_encoded = encode_gray_image(gauss_image, width, height);
-    lodepng_encode32_file("output_images/gauss.png", gauss_encoded, width, height);
-    unsigned char* sobel_encoded = encode_gray_image(sobel_image, width, height);
-    lodepng_encode32_file("output_images/sobel.png", sobel_encoded, width, height);
-    unsigned char* segmented_encoded = encode_image(segmented_image, width, height);
-    lodepng_encode32_file("output_images/segmented.png", segmented_encoded, width, height);
-
     free_image(color_image, width);
     free_gray_image(gray_image, width);
     if (config.median_filter == MedianFilter_enabled) {
+        save_gray_image(median_image, width, height, "output_images/median.png");
         free_gray_image(median_image, width);
     }
+    save_gray_image(gauss_image, width, height, "output_images/gauss.png");
     free_gray_image(gauss_image, width);
+    save_gray_image(sobel_image, width, height, "output_images/sobel.png");
     free_gray_image(sobel_image, width);
+    save_image(segmented_image, width, height, "output_images/segmented.png");
     free_image(segmented_image, width);
 
     printf("Images saved\n");

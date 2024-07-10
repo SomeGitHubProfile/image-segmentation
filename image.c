@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "lodepng.h"
+
 #include "pixel.h"
 
 Pixel** decode_image(unsigned char* source, unsigned width, unsigned height) {
@@ -48,6 +50,20 @@ void free_image(Pixel** image, unsigned width) {
         free(image[x]);
     }
     free(image);
+    return;
+}
+
+void save_gray_image(GrayPixel** image, unsigned width, unsigned height, const char* path) {
+    unsigned char* encoded = encode_gray_image(image, width, height);
+    lodepng_encode32_file(path, encoded, width, height);
+    free(encoded);
+    return;
+}
+
+void save_image(Pixel** image, unsigned width, unsigned height, const char* path) {
+    unsigned char* encoded = encode_image(image, width, height);
+    lodepng_encode32_file(path, encoded, width, height);
+    free(encoded);
     return;
 }
 
