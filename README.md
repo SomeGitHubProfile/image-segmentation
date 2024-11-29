@@ -7,7 +7,7 @@ If default.cfg exists, program will load it and apply settings from it. Then you
 If param "config" in default.cfg doesn't equal to "this" or "default.cfg" and there is config, which name equals to the "config" param's value, program will load that config.
 For example, if default.cfg contains string "config: arm.cfg" and there is arm.cfg in that folder, program will load arm.cfg.
 Only default.cfg can redirect loading to another config.
-If config doesn't contain some params, they will be set do default values.
+If config doesn't contain some params, they will be set to default values.
 If config contains some lines, that aren't params, the program will ignore them.
 # Config params
 * config: the name of config that should be loaded (used only in default.cfg). Use "config: this" to load default.cfg config.
