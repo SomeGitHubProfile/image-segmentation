@@ -17,7 +17,7 @@ unsigned char clamp_sum(double sum) {
     return round(sum);
 }
 
-void get_3x3_kernels(char* shift, char* kernel_size, char*** horizontal_destination, char*** vertical_destination) {
+void get_3x3_kernels(unsigned char* shift, unsigned char* kernel_size, char*** horizontal_destination, char*** vertical_destination) {
     *shift = 1;
     *kernel_size = *shift * 2 + 1;
     const char horizontal_kernel[3][3] = {
@@ -30,11 +30,11 @@ void get_3x3_kernels(char* shift, char* kernel_size, char*** horizontal_destinat
         {-2, +0, +2},
         {-1, +0, +1}
     };
-    *horizontal_destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
-    *vertical_destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
+    *horizontal_destination = malloc((*kernel_size) * sizeof(char*));
+    *vertical_destination = malloc((*kernel_size) * sizeof(char*));
     for (int i = 0; i < *kernel_size; ++i) {
-        (*horizontal_destination)[i] = malloc((*kernel_size) * sizeof(double));
-        (*vertical_destination)[i] = malloc((*kernel_size) * sizeof(double));
+        (*horizontal_destination)[i] = malloc((*kernel_size) * sizeof(char));
+        (*vertical_destination)[i] = malloc((*kernel_size) * sizeof(char));
         for (int j = 0; j < *kernel_size; ++j) {
             (*horizontal_destination)[i][j] = horizontal_kernel[i][j];
             (*vertical_destination)[i][j] = vertical_kernel[i][j];
@@ -43,7 +43,7 @@ void get_3x3_kernels(char* shift, char* kernel_size, char*** horizontal_destinat
     return;
 }
 
-void get_5x5_kernels(char* shift, char* kernel_size, char*** horizontal_destination, char*** vertical_destination) {
+void get_5x5_kernels(unsigned char* shift, unsigned char* kernel_size, char*** horizontal_destination, char*** vertical_destination) {
     *shift = 2;
     *kernel_size = *shift * 2 + 1;
     const char horizontal_kernel[5][5] = {
@@ -60,11 +60,11 @@ void get_5x5_kernels(char* shift, char* kernel_size, char*** horizontal_destinat
         {+2, +1, 0, -1, -2},
         {+2, +1, 0, -1, -2}
     };
-    *horizontal_destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
-    *vertical_destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
+    *horizontal_destination = malloc((*kernel_size) * sizeof(char*));
+    *vertical_destination = malloc((*kernel_size) * sizeof(char*));
     for (int i = 0; i < *kernel_size; ++i) {
-        (*horizontal_destination)[i] = malloc((*kernel_size) * sizeof(double));
-        (*vertical_destination)[i] = malloc((*kernel_size) * sizeof(double));
+        (*horizontal_destination)[i] = malloc((*kernel_size) * sizeof(char));
+        (*vertical_destination)[i] = malloc((*kernel_size) * sizeof(char));
         for (int j = 0; j < *kernel_size; ++j) {
             (*horizontal_destination)[i][j] = horizontal_kernel[i][j];
             (*vertical_destination)[i][j] = vertical_kernel[i][j];
@@ -73,7 +73,7 @@ void get_5x5_kernels(char* shift, char* kernel_size, char*** horizontal_destinat
     return;
 }
 
-void get_kernels(char* shift, char* kernel_size, char*** horizontal_destination, char*** vertical_destination, SobelKernels kernel_type) {
+void get_kernels(unsigned char* shift, unsigned char* kernel_size, char*** horizontal_destination, char*** vertical_destination, SobelKernels kernel_type) {
     switch (kernel_type) {
         case SobelKernel_3x3:
             get_3x3_kernels(shift, kernel_size, horizontal_destination, vertical_destination);
@@ -88,8 +88,18 @@ void get_kernels(char* shift, char* kernel_size, char*** horizontal_destination,
     return;
 }
 
+void free_kernels(char** horizontal_kernel, char** vertical_kernel, unsigned char kernel_size) {
+    for (unsigned char i = 0; i < kernel_size; ++i) {
+        free(horizontal_kernel[i]);
+        free(vertical_kernel[i]);
+    }
+    free(horizontal_kernel);
+    free(vertical_kernel);
+    return;
+}
+
 GrayPixel** sobel_filter(GrayPixel** source, unsigned width, unsigned height, SobelKernels kernel_type) {
-    char shift, kernel_size;
+    unsigned char shift, kernel_size;
     char** horizontal_kernel;
     char** vertical_kernel;
     get_kernels(&shift, &kernel_size, &horizontal_kernel, &vertical_kernel, kernel_type);
@@ -108,5 +118,6 @@ GrayPixel** sobel_filter(GrayPixel** source, unsigned width, unsigned height, So
             image[x][y].alpha = 255;
         }
     }
+    free_kernels(horizontal_kernel, vertical_kernel, kernel_size);
     return image;
 }

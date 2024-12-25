@@ -6,7 +6,7 @@
 #include "pixel.h"
 #include "image.h"
 
-void get_3x3_kernel(char* shift, char* kernel_size, double*** destination) {
+void get_3x3_kernel(unsigned char* shift, unsigned char* kernel_size, double*** destination) {
     *shift = 1;
     *kernel_size = *shift * 2 + 1;
     /*
@@ -20,7 +20,7 @@ void get_3x3_kernel(char* shift, char* kernel_size, double*** destination) {
         {0.125, 0.25, 0.125},
         {0.0625, 0.125, 0.062}
     };
-    *destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
+    *destination = malloc((*kernel_size) * sizeof(double*));
     for (int i = 0; i < *kernel_size; ++i) {
         (*destination)[i] = malloc((*kernel_size) * sizeof(double));
         for (int j = 0; j < *kernel_size; ++j) {
@@ -30,7 +30,7 @@ void get_3x3_kernel(char* shift, char* kernel_size, double*** destination) {
     return;
 }
 
-void get_5x5_kernel(char* shift, char* kernel_size, double*** destination) {
+void get_5x5_kernel(unsigned char* shift, unsigned char* kernel_size, double*** destination) {
     *shift = 2;
     *kernel_size = *shift * 2 + 1;
     /*
@@ -48,7 +48,7 @@ void get_5x5_kernel(char* shift, char* kernel_size, double*** destination) {
         {0.014652014652014652, 0.05860805860805861, 0.09523809523809523, 0.05860805860805861, 0.014652014652014652},
         {0.003663003663003663, 0.014652014652014652, 0.02564102564102564, 0.014652014652014652, 0.003663003663003663},
     };
-    *destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
+    *destination = malloc((*kernel_size) * sizeof(double*));
     for (int i = 0; i < *kernel_size; ++i) {
         (*destination)[i] = malloc((*kernel_size) * sizeof(double));
         for (int j = 0; j < *kernel_size; ++j) {
@@ -58,7 +58,7 @@ void get_5x5_kernel(char* shift, char* kernel_size, double*** destination) {
     return;
 }
 
-void get_5x5_low_value_kernel(char* shift, char* kernel_size, double*** destination) {
+void get_5x5_low_value_kernel(unsigned char* shift, unsigned char* kernel_size, double*** destination) {
     *shift = 2;
     *kernel_size = *shift * 2 + 1;
     /*
@@ -76,7 +76,7 @@ void get_5x5_low_value_kernel(char* shift, char* kernel_size, double*** destinat
         {0.025157232704402517, 0.05660377358490566, 0.07547169811320754, 0.05660377358490566, 0.025157232704402517},
         {0.012578616352201259, 0.025157232704402517, 0.031446540880503145, 0.025157232704402517, 0.012578616352201259}
     };
-    *destination = malloc((*kernel_size) * (*kernel_size) * sizeof(double*));
+    *destination = malloc((*kernel_size) * sizeof(double*));
     for (int i = 0; i < *kernel_size; ++i) {
         (*destination)[i] = malloc((*kernel_size) * sizeof(double));
         for (int j = 0; j < *kernel_size; ++j) {
@@ -86,7 +86,15 @@ void get_5x5_low_value_kernel(char* shift, char* kernel_size, double*** destinat
     return;
 }
 
-void get_kernel(int* shift, int* kernel_size, double*** destination, GaussianKernels kernel_type) {
+void free_kernel(double** kernel, unsigned char kernel_size) {
+    for (unsigned char i = 0; i < kernel_size; ++i) {
+        free(kernel[i]);
+    }
+    free(kernel);
+    return;
+}
+
+void get_kernel(unsigned char* shift, unsigned char* kernel_size, double*** destination, GaussianKernels kernel_type) {
     switch (kernel_type) {
         case GaussianKernel_3x3:
             get_3x3_kernel(shift, kernel_size, destination);
@@ -105,7 +113,7 @@ void get_kernel(int* shift, int* kernel_size, double*** destination, GaussianKer
 }
 
 GrayPixel** gaussian_filter(GrayPixel** source, unsigned width, unsigned height, GaussianKernels kernel_type) {
-    char shift, kernel_size;
+    unsigned char shift, kernel_size;
     double** kernel;
     get_kernel(&shift, &kernel_size, &kernel, kernel_type);
     GrayPixel** image = malloc_gray_image(width, height);
@@ -122,5 +130,6 @@ GrayPixel** gaussian_filter(GrayPixel** source, unsigned width, unsigned height,
             image[x][y].alpha = 255;
         }
     }
+    free_kernel(kernel, kernel_size);
     return image;
 }
